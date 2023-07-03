@@ -14,40 +14,66 @@ files = os.listdir()
 cd = os.getcwd()
 
 for file in files:
+    
+    count = 0
     if "fedora" in file:
         print(file)
         filepath = cd + "/" + file
+        print(filepath)
 
-print(filepath)
-
-os.chdir(filepath)
-
+        os.chdir(filepath)
 
 
 
 
 
 
-#command to unzip log file
 
-#gzip -d builder-live.log.gz
+        #command to unzip log file
 
-unzipCommand = "gzip -d builder-live.log.gz"
-result = subprocess.run(unzipCommand, shell = True, capture_output = False, text = True)
-print(result.stdout)
+        #gzip -d builder-live.log.gz
 
-
-with open("builder-live.log", "r") as file:
-
-    
-    for line in file:
+        unzipCommand = "gzip -d builder-live.log.gz"
+        result = subprocess.run(unzipCommand, shell = True, capture_output = False, text = True)
+        print(result.stdout)
         
+        weirdFailures = []
         
-        if "test" in line and "FAILED" in line and "..." in line:
+        with open("builder-live.log", "r") as file:
 
-                hashmap[line] = 1
+            
+            for line in file:
                 
-keys = list(hashmap.keys())
+                if (count == 0):
+                    if "test" in line and "FAILED" in line and "..." in line:
 
-for key in keys:
-    print(key)
+                        
+                        hashmap[line] = 1
+                else:
+                    if "test" in line and "FAILED" in line and "..." in line:
+                        
+                        if (line not in hashmap):
+
+                        
+                            hashmap[line] = 1
+                            name = line + file
+                            weirdFailures.append(name)
+
+                
+                
+
+        keys = list(hashmap.keys())
+        
+    
+        print("----------------------------")
+        for key in keys:
+            print(key)
+        
+        count = count + 1
+
+        print("Weird Failures")
+
+        for failure in weirdFailures:
+            print(failure)
+
+
