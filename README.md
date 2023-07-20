@@ -7,3 +7,11 @@ In order to connect to the copr API, you must the API token in the ~/.config/cop
 
 If you'd like to contribute to this project or submit errata, please read CONTRIBUTING.md.
 
+Jai Pandia (2023)
+
+This project is licensed under the MIT License - see the LICENSE.md file for details
+
+Thanks to the Platform Tools team at Red Hat.
+
+
+
