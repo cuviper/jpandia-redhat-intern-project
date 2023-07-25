@@ -10,13 +10,17 @@ hashmap = {}
 
 from copr.v3 import config_from_file
 import copr.v3
+import sys
 
 
 
+
+username = sys.argv[1]
+password = sys.argv[2]
         
 config = config_from_file()
 package = copr.v3.proxies.package.PackageProxy(config)
-rj = package.get("coban0909", "Package_Test", "rust", False, True)
+rj = package.get(username, password, "rust", False, True)
 buildID = rj["builds"]["latest_succeeded"]["id"]
 
 
