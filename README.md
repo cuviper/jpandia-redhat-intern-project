@@ -5,7 +5,10 @@ failures are tests that failed on some architectures (processecers like s390x, a
 
 In order to connect to the copr API, you must the API token in the ~/.config/copr directory. For clear instructions: https://copr.fedorainfracloud.org/api/
 
-If you'd like to contribute to this project or submit errata, please read CONTRIBUTING.md.
+Version_Replacer.py is 
+
+FailedFinder.py requires the username of the copr account and the project name of the build that the user wishes to analyze. The program automatically retrieves the build id of the latest successful build, downloads the logs, and searches for abnormal failures. 
+
 
 Jai Pandia (2023)
 
