@@ -1,6 +1,22 @@
 import os
 import subprocess
 
+
+#get rust sources -downloads the latest nightly build
+
+#add command that removes rustc-nightly-src.tar.xz
+
+#use python api to remove 
+
+os.remove("/home/jpandia/packagingTutorial/rust/wasi-libc-wasi-sdk-20.tar.gz")
+os.remove("/home/jpandia/packagingTutorial/rust/rustc-nightly-src.tar.xz")
+
+specCommand = "spectool -g rust.spec"
+result = subprocess.run(specCommand, shell = True, capture_output = True, text = True)
+print(result.stdout)
+
+
+
 #extract file from version folder
 extractCommand = "tar xf rustc-nightly-src.tar.xz rustc-nightly-src/version"
 result = subprocess.run(extractCommand, shell = True, capture_output = True, text = True)
@@ -39,11 +55,9 @@ new_rust_spec_file = "".join(specFile)
 with open("rust_spec_tester.txt", "w") as file:
     file.write(new_rust_spec_file)
 
-#get rust sources
-specCommand = "spectool -g rust.spec"
-result = subprocess.run(specCommand, shell = True, capture_output = True, text = True)
-print(result.stdout)
 
+
+#ar 64 powerpc 64le, s390x
 # # #create project
 # createCommand = "copr-cli create --chroot fedora-38-i386 --chroot fedora-38-x86_64 test-project4"
 # result = subprocess.run(createCommand, shell = True, capture_output = True, text = True)
@@ -53,9 +67,9 @@ print(result.stdout)
 
 print("Hellloo")
 #buildCommand = "ls"
-buildCommand = "copr-cli build test-project4 ./rust-1.70.0-1.fc39.src.rpm"
+buildCommand = "copr-cli build test-project4 ./rust-1.70.0-1.fc39.src.rpm --network"
 result = subprocess.run(buildCommand, shell = True, capture_output = False, text = True)
 print(result.stdout)
 
 
-
+    
