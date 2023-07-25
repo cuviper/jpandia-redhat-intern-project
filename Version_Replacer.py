@@ -2,14 +2,20 @@ import os
 import subprocess
 
 
+
 #get rust sources -downloads the latest nightly build
 
 #add command that removes rustc-nightly-src.tar.xz
 
 #use python api to remove 
 
-os.remove("/home/jpandia/packagingTutorial/rust/wasi-libc-wasi-sdk-20.tar.gz")
-os.remove("/home/jpandia/packagingTutorial/rust/rustc-nightly-src.tar.xz")
+if (os.path.exists("wasi-libc-wasi-sdk-20.tar.gz")):
+    os.remove("/home/jpandia/packagingTutorial/rust/wasi-libc-wasi-sdk-20.tar.gz")
+
+if (os.path.exists("rustc-nightly-src.tar.xz")):
+    os.remove("/home/jpandia/packagingTutorial/rust/rustc-nightly-src.tar.xz")
+
+
 
 specCommand = "spectool -g rust.spec"
 result = subprocess.run(specCommand, shell = True, capture_output = True, text = True)
@@ -67,7 +73,7 @@ with open("rust_spec_tester.txt", "w") as file:
 
 print("Hellloo")
 #buildCommand = "ls"
-buildCommand = "copr-cli build test-project4 ./rust-1.70.0-1.fc39.src.rpm --network"
+buildCommand = "copr-cli build test-project4 ./rust-1.70.0-1.fc39.src.rpm"
 result = subprocess.run(buildCommand, shell = True, capture_output = False, text = True)
 print(result.stdout)
 
