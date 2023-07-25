@@ -8,6 +8,26 @@ hashmap = {}
 
 #copr-cli download-build 6057851
 
+from copr.v3 import config_from_file
+import copr.v3
+
+
+
+        
+config = config_from_file()
+package = copr.v3.proxies.package.PackageProxy(config)
+rj = package.get("coban0909", "Package_Test", "rust", False, True)
+buildID = rj["builds"]["latest_succeeded"]["id"]
+
+
+
+downloadCommand = "copr-cli download-build " + str(buildID)
+
+result = subprocess.run(downloadCommand, shell = True, capture_output = False, text = True)
+print(result.stdout)
+
+
+
 #have to get builder-live.log.gz from another folder called epel-7-x86_64
 
 files = os.listdir()
