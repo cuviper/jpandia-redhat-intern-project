@@ -1,18 +1,11 @@
 
+from copr.v3 import config_from_file
+import copr.v3
+import sys
 import os
 import subprocess
 
 hashmap = {}
-
-#command to download the successful build 
-
-#copr-cli download-build 6057851
-
-from copr.v3 import config_from_file
-import copr.v3
-import sys
-
-
 
 
 username = sys.argv[1]
@@ -22,10 +15,10 @@ config = config_from_file()
 package = copr.v3.proxies.package.PackageProxy(config)
 rj = package.get(username, projectName, "rust", False, True)
 buildID = rj["builds"]["latest_succeeded"]["id"]
+  
 
 
-
-downloadCommand = "copr-cli download-build " + str(buildID)
+downloadCommand = "copr-cli download-build " + str(buildID) + "--logs"
 
 result = subprocess.run(downloadCommand, shell = True, capture_output = False, text = True)
 print(result.stdout)
@@ -46,12 +39,6 @@ for file in files:
         print(filepath)
 
         os.chdir(filepath)
-
-
-
-
-
-
 
         #command to unzip log file
 
