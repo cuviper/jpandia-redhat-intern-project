@@ -7,84 +7,79 @@ import subprocess
 
 hashmap = {}
 
+def unzipFile():
 
-username = sys.argv[1]
-projectName = sys.argv[2]
+    print(file)
+    filepath = cd + "/" + file
+    print(filepath)
+    os.chdir(filepath)
+    unzipCommand = "gzip -d builder-live.log.gz"
+    result = subprocess.run(unzipCommand, shell = True, capture_output = False, text = True)
+    print(result.stdout)
         
-config = config_from_file()
-package = copr.v3.proxies.package.PackageProxy(config)
-rj = package.get(username, projectName, "rust", False, True)
-buildID = rj["builds"]["latest_succeeded"]["id"]
-  
+def downloadBuild():
+
+    username = sys.argv[1]
+    projectName = sys.argv[2]
+            
+    config = config_from_file()
+    package = copr.v3.proxies.package.PackageProxy(config)
+    rj = package.get(username, projectName, "rust", False, True)
+    buildID = rj["builds"]["latest_succeeded"]["id"]
+    print("buildid: " + str(buildID))
+    downloadCommand = "copr-cli download-build " + str(buildID)
+    result = subprocess.run(downloadCommand, shell = True, capture_output = False, text = True)
+    print(result.stdout)
 
 
-downloadCommand = "copr-cli download-build " + str(buildID) + "--logs"
 
-result = subprocess.run(downloadCommand, shell = True, capture_output = False, text = True)
-print(result.stdout)
+#downloadBuild()
 
-
-
-#have to get builder-live.log.gz from another folder called epel-7-x86_64
+print("ayooo wtf")
 
 files = os.listdir()
 cd = os.getcwd()
 
+weirdFailures = {}
+
 for file in files:
     
-    count = 0
     if "fedora" in file:
-        print(file)
-        filepath = cd + "/" + file
-        print(filepath)
-
-        os.chdir(filepath)
-
-        #command to unzip log file
-
-        #gzip -d builder-live.log.gz
-
-        unzipCommand = "gzip -d builder-live.log.gz"
-        result = subprocess.run(unzipCommand, shell = True, capture_output = False, text = True)
-        print(result.stdout)
+        unzipFile()
+       
         
-        weirdFailures = []
         
         with open("builder-live.log", "r") as file:
 
             
             for line in file:
-                
-                if (count == 0):
-                    if "test" in line and "FAILED" in line and "..." in line:
 
-                        
-                        hashmap[line] = 1
-                else:
-                    if "test" in line and "FAILED" in line and "..." in line:
-                        
-                        if (line not in hashmap):
+                if "test" in line and "..." in line and "ok" in line:   
+                    # print(line)
+                    # print(line[0:len(line) -7])
 
-                        
-                            hashmap[line] = 1
-                            name = line + file
-                            weirdFailures.append(name)
+                    hashmap[line[0:len(line) -7]] = 1
+                    #print(line)
+                    #print(line)
 
-                
-                
 
-        keys = list(hashmap.keys())
-        
-    
-        print("----------------------------")
-        for key in keys:
-            print(key)
-        
-        count = count + 1
 
-        print("Weird Failures")
 
-        for failure in weirdFailures:
-            print(failure)
+for file in files:
+     print(file)
+     if "fedora" in file:
+          with open("builder-live.log", "r") as file:
+                for line in file:
+                    if "test" in line and "..." in line and "FAILED" in line:
+                        # print(line)
+                        # print(line[0:len(line) -11])
+                        if hashmap.get(line[0:len(line) -11]) is None:
+                            weirdFailures[line] = 1
+
+                        # print(line) 
+
+
+for key in weirdFailures.keys():
+    print(key)            
 
 
