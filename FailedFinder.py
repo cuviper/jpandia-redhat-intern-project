@@ -8,12 +8,7 @@ import subprocess
 hashmap = {}
 
 def unzipFile():
-
-    print(file)
-    filepath = cd + "/" + file
-    print(filepath)
-    os.chdir(filepath)
-    unzipCommand = "gzip -d builder-live.log.gz"
+    unzipCommand = "gzip -d " + str(file) + "/builder-live.log.gz"
     result = subprocess.run(unzipCommand, shell = True, capture_output = False, text = True)
     print(result.stdout)
         
@@ -31,54 +26,34 @@ def downloadBuild():
     result = subprocess.run(downloadCommand, shell = True, capture_output = False, text = True)
     print(result.stdout)
 
-
-
 downloadBuild()
 
-
+#finds all test cases that passed and stores in a hashmap
 files = os.listdir()
-cd = os.getcwd()
-
-weirdFailures = {}
-
-for file in files:
-    
+for file in files: 
     if "fedora" in file:
         unzipFile()
-       
-        
-        
-        with open("builder-live.log", "r") as file:
-
-            
-            for line in file:
-
+        filePath = str(file) + "/builder-live.log"
+        with open(filePath, "r") as file:          
+            for line in file:             
                 if "test" in line and "..." in line and "ok" in line:   
-                    # print(line)
-                    # print(line[0:len(line) -7])
-
                     hashmap[line[0:len(line) -7]] = 1
-                    #print(line)
-                    #print(line)
 
-
-
-
+#finds all test cases that failed and cross references them with test cases that passed to determine abnormal failures 
+# targetting architectures
 for file in files:
-     print(file)
+     filename = file
+     filePath = str(file) + "/builder-live.log"
+     
      if "fedora" in file:
-          with open("builder-live.log", "r") as file:
+          with open(filePath, "r") as file:
                 for line in file:
                     if "test" in line and "..." in line and "FAILED" in line:
-                        # print(line)
-                        # print(line[0:len(line) -11])
                         if hashmap.get(line[0:len(line) -11]) is not None:
-                            weirdFailures[line] = 1
+                            print(line + filename + "\n")
+                        
+                            
 
-                        # print(line) 
 
-
-for key in weirdFailures.keys():
-    print(key)            
 
 
