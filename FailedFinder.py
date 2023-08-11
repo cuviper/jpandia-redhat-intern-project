@@ -33,9 +33,8 @@ def downloadBuild():
 
 
 
-#downloadBuild()
+downloadBuild()
 
-print("ayooo wtf")
 
 files = os.listdir()
 cd = os.getcwd()
@@ -73,7 +72,7 @@ for file in files:
                     if "test" in line and "..." in line and "FAILED" in line:
                         # print(line)
                         # print(line[0:len(line) -11])
-                        if hashmap.get(line[0:len(line) -11]) is None:
+                        if hashmap.get(line[0:len(line) -11]) is not None:
                             weirdFailures[line] = 1
 
                         # print(line) 
