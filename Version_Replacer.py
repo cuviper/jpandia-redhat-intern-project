@@ -1,54 +1,39 @@
 import os
+import sys
 import subprocess
 
+projectName = sys.argv[1]
 
-
-#get rust sources -downloads the latest nightly build
-
-#add command that removes rustc-nightly-src.tar.xz
-
-#use python api to remove 
-
-if (os.path.exists("wasi-libc-wasi-sdk-20.tar.gz")):
-    os.remove("/home/jpandia/packagingTutorial/rust/wasi-libc-wasi-sdk-20.tar.gz")
-
+#remove older files and download updated ones
 if (os.path.exists("rustc-nightly-src.tar.xz")):
-    os.remove("/home/jpandia/packagingTutorial/rust/rustc-nightly-src.tar.xz")
-
-
-
+    os.remove("rustc-nightly-src.tar.xz")
 specCommand = "spectool -g rust.spec"
 result = subprocess.run(specCommand, shell = True, capture_output = True, text = True)
 print(result.stdout)
-
-
 
 #extract file from version folder
 extractCommand = "tar xf rustc-nightly-src.tar.xz rustc-nightly-src/version"
 result = subprocess.run(extractCommand, shell = True, capture_output = True, text = True)
 
 
-#retreive file from folder
-cd = os.getcwd()
-file_path = cd + "/rustc-nightly-src/version"
-with open(file_path, 'r') as file:
+#read file
+with open("rustc-nightly-src/version", 'r') as file:
     version = file.read()
 
 #parse "version" retrieved from file to suit rpm syntax
-substring = version[0:14]
-substring2 = version[26:-1]
+array = version.split()
+substring = array[0]
+substring2 = array[2][:-1]
 version = substring + "~" + substring2
 version = version.replace("-", "~")
 
-#replace version from spec file with correct version
 
+
+#replace version from spec file with correct version
 with open("rust.spec", "r") as file:
     specFile = file.readlines()
-
 length = len(specFile)
-
 i = 0
-
 for line in specFile:
     if "Version: " in line:
         lineNum = i
@@ -58,22 +43,23 @@ for line in specFile:
 lineModified = "Version:        " + version + "\n"
 specFile[lineNum] = lineModified
 new_rust_spec_file = "".join(specFile)
-with open("rust_spec_tester.txt", "w") as file:
+with open("rust.spec", "w") as file:
     file.write(new_rust_spec_file)
 
 
+#package specfile into srpm file
+packagingCommand = "fedpkg srpm"
+result = subprocess.run(packagingCommand, shell = True, capture_output = True, text = True)
+array = result.stdout.split("/")
 
-#ar 64 powerpc 64le, s390x
-# # #create project
-# createCommand = "copr-cli create --chroot fedora-38-i386 --chroot fedora-38-x86_64 test-project4"
-# result = subprocess.run(createCommand, shell = True, capture_output = True, text = True)
+# #create project
+# createCommand = "copr-cli create " + projectName + " --chroot fedora-38-i386 --chroot fedora-38-x86_64 --chroot fedora-38-aarch64 --chroot fedora-38-ppc64le --chroot fedora-38-s390x" 
+# result = subprocess.run(createCommand, shell = True, capture_output = False, text = True)
 # print(result.stdout)
 
 #build project
-
-print("Hellloo")
-#buildCommand = "ls"
-buildCommand = "copr-cli build test-project4 ./rust-1.70.0-1.fc39.src.rpm"
+srpmfile = array[-1]
+buildCommand = "copr-cli build " + str(projectName) + " " + str(srpmfile)
 result = subprocess.run(buildCommand, shell = True, capture_output = False, text = True)
 print(result.stdout)
 
